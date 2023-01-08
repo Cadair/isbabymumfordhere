@@ -28,14 +28,23 @@
     <script>
      const homeserver = "https://openastronomy.modular.im/";
      async function getAccessToken() {
-         const post = {
-             method: 'POST',
-             headers: {
-                 'Content-Type': 'application/json'
-             }
-         };
-         const guestAcc = await fetch(`${homeserver}_matrix/client/v3/register?kind=guest`, {...post, body: JSON.stringify({})});
-         return guestAcc.json()
+         if (localStorage.getItem("access_token") == null) {
+             const post = {
+                 method: 'POST',
+                 headers: {
+                     'Content-Type': 'application/json'
+                 }
+             };
+             let guestAcc = await fetch(`${homeserver}_matrix/client/v3/register?kind=guest`, {...post, body: JSON.stringify({})});
+             guestAcc = await guestAcc.json();
+             const accessToken = guestAcc["access_token"];
+             localStorage.setItem("access_token", accessToken);
+             return accessToken
+         } else {
+             const accessToken = localStorage.getItem("access_token")
+             return accessToken
+         }
+
      }
 
      async function getBabyState(accessToken) {
@@ -50,13 +59,11 @@
      }
 
      async function getBabyContent() {
-         guestAcc = await getAccessToken();
-         const accessToken = guestAcc["access_token"];
+         accessToken = await getAccessToken();
          const babyState = await getBabyState(accessToken);
          return babyState["message"];
      }
      getBabyContent().then(res => {
-         console.log(res)
          document.getElementById("babyMessage").innerText = res;
      }
      );
