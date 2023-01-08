@@ -60,10 +60,13 @@
      async function getBabyContent() {
          accessToken = await getAccessToken();
          let babyReq = await getBabyState(accessToken);
-         if (!babyReq.ok) {
+         if (babyReq.status == 401) {
              localStorage.removeItem("access_token");
              accessToken = await getAccessToken();
              babyReq = await getBabyState(accessToken);
+         }
+         if (!babyReq.ok) {
+             return "Unknown Error, Please Reload."
          }
          const babyState = await babyReq.json();
          return babyState["message"];
