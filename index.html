@@ -44,7 +44,6 @@
              const accessToken = localStorage.getItem("access_token")
              return accessToken
          }
-
      }
 
      async function getBabyState(accessToken) {
@@ -54,19 +53,25 @@
                  'Authorization': `Bearer ${accessToken}`,
              }
          }
-         const babyState = await fetch(`${homeserver}_matrix/client/v3/rooms/%21oVOKAsBzMVEVvtESgR%3Acadair.com/state/com.cadair.baby/`, options);
-         return babyState.json()
+         const babyReq = await fetch(`${homeserver}_matrix/client/v3/rooms/%21oVOKAsBzMVEVvtESgR%3Acadair.com/state/com.cadair.baby/`, options);
+         return babyReq
      }
 
      async function getBabyContent() {
          accessToken = await getAccessToken();
-         const babyState = await getBabyState(accessToken);
+         let babyReq = await getBabyState(accessToken);
+         if (!babyReq.ok) {
+             localStorage.removeItem("access_token");
+             accessToken = await getAccessToken();
+             babyReq = await getBabyState(accessToken);
+         }
+         const babyState = await babyReq.json();
          return babyState["message"];
      }
+
      getBabyContent().then(res => {
          document.getElementById("babyMessage").innerText = res;
-     }
-     );
+     });
     </script>
   </body>
 </html>
