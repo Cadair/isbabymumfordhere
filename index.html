@@ -72,9 +72,18 @@
          return babyState["message"];
      }
 
-     getBabyContent().then(res => {
-         document.getElementById("babyMessage").innerText = res;
-     });
+     async function setText() {
+         res = await getBabyContent()
+         try {
+             document.getElementById("babyMessage").innerText = res;
+             setTimeout(setText, 30000);
+         } catch(e) {
+             console.log("It broke: " + e);
+         }
+     }
+
+     setText();
+
     </script>
   </body>
 </html>
