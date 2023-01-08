@@ -66,7 +66,7 @@
              babyReq = await getBabyState(accessToken);
          }
          if (!babyReq.ok) {
-             return "Unknown Error, Please Reload."
+             return "Unknown"
          }
          const babyState = await babyReq.json();
          return babyState["message"];
