@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+     html,body {
+         display:flex;
+         height: 100%;
+         width: 100%;
+         margin: 0;
+         font-family: "sans-serif";
+     }
+     div.main {
+         margin: auto;
+         text-align: center;
+     }
+     .main h1 {
+         font-size: 10em;
+     }
+    </style>
+  </head>
+  <body>
+    <div class="main"><h1><span id="babyMessage"></span></h1></div>
+    <script>
+     const homeserver = "https://openastronomy.modular.im/";
+     async function getAccessToken() {
+         const post = {
+             method: 'POST',
+             headers: {
+                 'Content-Type': 'application/json'
+             }
+         };
+         const guestAcc = await fetch(`${homeserver}_matrix/client/v3/register?kind=guest`, {...post, body: JSON.stringify({})});
+         return guestAcc.json()
+     }
+
+     async function getBabyState(accessToken) {
+         const options = {
+             headers: {
+                 'Content-Type': 'application/json',
+                 'Authorization': `Bearer ${accessToken}`,
+             }
+         }
+         const babyState = await fetch(`${homeserver}_matrix/client/v3/rooms/%21oVOKAsBzMVEVvtESgR%3Acadair.com/state/com.cadair.baby/`, options);
+         return babyState.json()
+     }
+
+     async function getBabyContent() {
+         guestAcc = await getAccessToken();
+         const accessToken = guestAcc["access_token"];
+         const babyState = await getBabyState(accessToken);
+         return babyState["message"];
+     }
+     getBabyContent().then(res => {
+         console.log(res)
+         document.getElementById("babyMessage").innerText = res;
+     }
+     );
+    </script>
+  </body>
+</html>
